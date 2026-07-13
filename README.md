@@ -53,6 +53,8 @@ O repositório inclui `render.yaml` e `Dockerfile`. No Render, crie um Blueprint
 jdbc:postgresql://host.neon.tech/neondb?sslmode=require&channelBinding=require
 ```
 
+Como alternativa, a API também aceita diretamente a connection string `postgresql://...` copiada do Neon e a converte para JDBC automaticamente. Se ela contiver usuário e senha, esses valores também são usados pelo datasource.
+
 O serviço escuta automaticamente a variável `PORT` fornecida pelo Render, executa Flyway na inicialização e usa `/actuator/health` como health check. Após o primeiro deploy, confirme no log que V1–V7 foram aplicadas e teste `/swagger-ui.html`, registro, login e uma rota autenticada.
 
 ## Autenticação
