@@ -33,7 +33,7 @@ docker compose stop postgres
 Exemplo com Neon:
 
 ```bash
-export DATABASE_URL='jdbc:postgresql://host.neon.tech/neondb?sslmode=require'
+export DATABASE_URL='jdbc:postgresql://host.neon.tech/neondb?sslmode=require&channelBinding=require'
 export DATABASE_USERNAME='usuario'
 export DATABASE_PASSWORD='senha'
 export JWT_SECRET='um-segredo-de-producao-com-no-minimo-32-bytes'
@@ -50,7 +50,7 @@ O repositório inclui `render.yaml` e `Dockerfile`. No Render, crie um Blueprint
 `DATABASE_URL` deve ser uma URL JDBC, por exemplo:
 
 ```text
-jdbc:postgresql://host.neon.tech/neondb?sslmode=require
+jdbc:postgresql://host.neon.tech/neondb?sslmode=require&channelBinding=require
 ```
 
 O serviço escuta automaticamente a variável `PORT` fornecida pelo Render, executa Flyway na inicialização e usa `/actuator/health` como health check. Após o primeiro deploy, confirme no log que V1–V7 foram aplicadas e teste `/swagger-ui.html`, registro, login e uma rota autenticada.
