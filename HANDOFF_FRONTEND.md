@@ -142,11 +142,27 @@ Contas fixas são referências para a UI. Não devem gerar ou alterar lançament
 {
   "mesReferencia": "2026-07",
   "porPessoa": [
-    { "pessoaId": "uuid", "nome": "Lucas", "renda": 0, "gasto": 0, "guardado": 0, "saldo": 0 }
+    {
+      "pessoaId": "uuid",
+      "nome": "Lucas",
+      "renda": 0,
+      "gasto": 0,
+      "guardado": 0,
+      "saldo": 0,
+      "gastosPorCategoria": [
+        { "categoriaId": "uuid", "nome": "Mercado", "total": 0 }
+      ],
+      "guardadoPorCategoria": [
+        { "categoriaId": "uuid", "nome": "Investimento", "total": 0 }
+      ]
+    }
   ],
   "casa": { "renda": 0, "gasto": 0, "guardado": 0, "saldo": 0 },
   "gastosPorCategoria": [
     { "categoriaId": "uuid", "nome": "Mercado", "total": 0 }
+  ],
+  "guardadoPorCategoria": [
+    { "categoriaId": "uuid", "nome": "Investimento", "total": 0 }
   ]
 }
 ```
@@ -157,6 +173,8 @@ Regras visuais e de domínio:
 - `saldo = renda - gasto - guardado`.
 - O cálculo `porPessoa` segue a regra de divisão da categoria, não quem pagou fisicamente.
 - `gastosPorCategoria` exclui categorias de poupança; poupança já é exibida em `guardado`, evitando dupla contagem.
+- Cada item de `porPessoa` inclui `gastosPorCategoria` e `guardadoPorCategoria`, ambos já calculados conforme a regra financeira da categoria.
+- O `guardadoPorCategoria` do nível raiz consolida os lançamentos de poupança da casa pelo valor total lançado.
 - Não existe cálculo de dívida/saldo a pagar entre pessoas nesta versão.
 
 ## Backend e deploy

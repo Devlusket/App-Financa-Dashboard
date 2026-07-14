@@ -6,6 +6,7 @@ public record RelatorioMensalResponse(
         String mesReferencia,
         List<RelatorioPessoaResponse> porPessoa,
         RelatorioCasaResponse casa,
-        List<GastoPorCategoriaResponse> gastosPorCategoria
+        List<GastoPorCategoriaResponse> gastosPorCategoria,
+        List<ValorPorCategoriaResponse> guardadoPorCategoria
 ) {
 }

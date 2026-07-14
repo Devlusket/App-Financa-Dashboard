@@ -8,6 +8,7 @@ import com.financa.relatorio.dto.GastoPorCategoriaResponse;
 import com.financa.relatorio.dto.RelatorioCasaResponse;
 import com.financa.relatorio.dto.RelatorioMensalResponse;
 import com.financa.relatorio.dto.RelatorioPessoaResponse;
+import com.financa.relatorio.dto.ValorPorCategoriaResponse;
 import com.financa.repository.LancamentoRepository;
 import com.financa.repository.PessoaRepository;
 import com.financa.repository.RendaRepository;
@@ -51,6 +52,7 @@ public class RelatorioMensalService {
         );
 
         Map<UUID, TotalCategoria> gastosPorCategoria = new HashMap<>();
+        Map<UUID, TotalCategoria> guardadoPorCategoria = new HashMap<>();
         lancamentoRepository.findAllByCasaIdAndMesReferencia(casaId, mesReferencia).forEach(lancamento -> {
             Map<UUID, BigDecimal> valoresPorPessoa = divisaoFinanceiraService.calcular(
                     lancamento.getCategoria().getTipoDivisao(),
@@ -67,8 +69,10 @@ public class RelatorioMensalService {
                 AcumuladoPessoa acumulado = acumulados.get(pessoaId);
                 if (lancamento.getCategoria().isEhPoupanca()) {
                     acumulado.guardado = acumulado.guardado.add(valor);
+                    acumularCategoria(acumulado.guardadoPorCategoria, lancamento, valor);
                 } else {
                     acumulado.gasto = acumulado.gasto.add(valor);
+                    acumularCategoria(acumulado.gastosPorCategoria, lancamento, valor);
                 }
             });
 
@@ -80,6 +84,8 @@ public class RelatorioMensalService {
                     totalAtual.total = totalAtual.total.add(lancamento.getValor());
                     return totalAtual;
                 });
+            } else {
+                acumularCategoria(guardadoPorCategoria, lancamento, lancamento.getValor());
             }
         });
 
@@ -97,7 +103,30 @@ public class RelatorioMensalService {
                 .map(entry -> new GastoPorCategoriaResponse(entry.getKey(), entry.getValue().nome, entry.getValue().total))
                 .sorted(Comparator.comparing(GastoPorCategoriaResponse::nome))
                 .toList();
-        return new RelatorioMensalResponse(mesReferencia, porPessoa, casa, categorias);
+        return new RelatorioMensalResponse(
+                mesReferencia,
+                porPessoa,
+                casa,
+                categorias,
+                valoresPorCategoria(guardadoPorCategoria)
+        );
+    }
+
+    private void acumularCategoria(Map<UUID, TotalCategoria> totais, Lancamento lancamento, BigDecimal valor) {
+        totais.compute(lancamento.getCategoria().getId(), (categoriaId, totalAtual) -> {
+            if (totalAtual == null) {
+                return new TotalCategoria(lancamento.getCategoria().getNome(), valor);
+            }
+            totalAtual.total = totalAtual.total.add(valor);
+            return totalAtual;
+        });
+    }
+
+    private List<ValorPorCategoriaResponse> valoresPorCategoria(Map<UUID, TotalCategoria> totais) {
+        return totais.entrySet().stream()
+                .map(entry -> new ValorPorCategoriaResponse(entry.getKey(), entry.getValue().nome, entry.getValue().total))
+                .sorted(Comparator.comparing(ValorPorCategoriaResponse::total).reversed())
+                .toList();
     }
 
     private BigDecimal totalRenda(Renda renda) {
@@ -110,6 +139,8 @@ public class RelatorioMensalService {
         private BigDecimal renda = ZERO;
         private BigDecimal gasto = ZERO;
         private BigDecimal guardado = ZERO;
+        private final Map<UUID, TotalCategoria> gastosPorCategoria = new HashMap<>();
+        private final Map<UUID, TotalCategoria> guardadoPorCategoria = new HashMap<>();
 
         private AcumuladoPessoa(Pessoa pessoa) {
             this.pessoa = pessoa;
@@ -117,8 +148,22 @@ public class RelatorioMensalService {
 
         private RelatorioPessoaResponse resposta() {
             return new RelatorioPessoaResponse(
-                    pessoa.getId(), pessoa.getNome(), renda, gasto, guardado, renda.subtract(gasto).subtract(guardado)
+                    pessoa.getId(),
+                    pessoa.getNome(),
+                    renda,
+                    gasto,
+                    guardado,
+                    renda.subtract(gasto).subtract(guardado),
+                    valoresPorCategoria(gastosPorCategoria),
+                    valoresPorCategoria(guardadoPorCategoria)
             );
+        }
+
+        private List<ValorPorCategoriaResponse> valoresPorCategoria(Map<UUID, TotalCategoria> totais) {
+            return totais.entrySet().stream()
+                    .map(entry -> new ValorPorCategoriaResponse(entry.getKey(), entry.getValue().nome, entry.getValue().total))
+                    .sorted(Comparator.comparing(ValorPorCategoriaResponse::total).reversed())
+                    .toList();
         }
     }
 
