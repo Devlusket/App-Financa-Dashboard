@@ -22,13 +22,13 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registrar(RegistroRequest request) {
-        String email = request.email().trim().toLowerCase();
-        if (casaRepository.existsByEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado");
+        String usuario = request.usuario().trim().toLowerCase();
+        if (casaRepository.existsByUsuario(usuario)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuário já cadastrado");
         }
 
         Casa casa = new Casa(
-                email,
+                usuario,
                 passwordEncoder.encode(request.senha()),
                 request.nome() == null || request.nome().isBlank() ? null : request.nome().trim()
         );
@@ -39,7 +39,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
-        Casa casa = casaRepository.findByEmail(request.email().trim().toLowerCase())
+        Casa casa = casaRepository.findByUsuario(request.usuario().trim().toLowerCase())
                 .orElseThrow(() -> credenciaisInvalidas());
 
         if (!passwordEncoder.matches(request.senha(), casa.getSenhaHash())) {
@@ -49,6 +49,6 @@ public class AuthService {
     }
 
     private ResponseStatusException credenciaisInvalidas() {
-        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "E-mail ou senha inválidos");
+        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário ou senha inválidos");
     }
 }

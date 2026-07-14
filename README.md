@@ -59,7 +59,7 @@ O serviço escuta automaticamente a variável `PORT` fornecida pelo Render, exec
 
 ## Autenticação
 
-Crie a conta da casa com `POST /auth/registrar` e use `POST /auth/login` para receber o token. Envie-o nas demais rotas:
+Crie a conta da casa com `POST /auth/registrar` e use `POST /auth/login` para receber o token. Ambos usam `usuario` e `senha`. Envie-o nas demais rotas:
 
 ```http
 Authorization: Bearer <token>

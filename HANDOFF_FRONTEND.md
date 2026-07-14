@@ -23,7 +23,7 @@ Este documento resume o backend concluído e as decisões de produto tomadas dur
 
 ## Fluxo e telas sugeridas
 
-1. **Registro/login**: criar uma casa no primeiro acesso, depois autenticar por e-mail e senha.
+1. **Registro/login**: criar uma casa no primeiro acesso, depois autenticar por usuário e senha.
 2. **Dashboard mensal**: seletor de mês, cards de renda/gasto/guardado/saldo, resumo por pessoa e gráfico por categoria.
 3. **Pessoas**: listar, criar e remover integrantes da casa.
 4. **Categorias**: criar/editar/remover categorias e configurar a regra de responsabilidade financeira.
@@ -39,8 +39,8 @@ Para uma primeira experiência útil, após registro, orientar o usuário a cada
 
 | Método | Rota | Corpo | Retorno |
 | --- | --- | --- | --- |
-| POST | `/auth/registrar` | `{ email, senha, nome? }` | `{ token }` (201) |
-| POST | `/auth/login` | `{ email, senha }` | `{ token }` |
+| POST | `/auth/registrar` | `{ usuario, senha, nome? }` | `{ token }` (201) |
+| POST | `/auth/login` | `{ usuario, senha }` | `{ token }` |
 
 O login é único por casa: não há perfis, papéis ou seleção de casa no frontend.
 

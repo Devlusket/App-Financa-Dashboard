@@ -26,8 +26,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Casa {
 
-    public Casa(String email, String senhaHash, String nome) {
-        this.email = email;
+    public Casa(String usuario, String senhaHash, String nome) {
+        this.usuario = usuario;
         this.senhaHash = senhaHash;
         this.nome = nome;
     }
@@ -38,7 +38,7 @@ public class Casa {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String usuario;
 
     @Column(name = "senha_hash", nullable = false)
     private String senhaHash;

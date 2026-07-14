@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface CasaRepository extends JpaRepository<Casa, UUID> {
 
-    Optional<Casa> findByEmail(String email);
+    Optional<Casa> findByUsuario(String usuario);
 
-    boolean existsByEmail(String email);
+    boolean existsByUsuario(String usuario);
 }
